@@ -144,6 +144,7 @@ set(EXAMPLES
 	imgui
 	indirectdraw	
 	instancing
+	instancing-229
 	mesh
 	multisampling
 	multithreading
