@@ -6,11 +6,18 @@ This is my Vulkan playground repository, it is based on *Vulkan C++ examples and
 
 ### instancing-229
 
+<img src="./instancing-229/results/Zrzut ekranu z 2017-06-04 18-22-43 - playing with number of rocks, planet and rock size, rings thickness.png" height="240px" align="right">
+
 Based on *instancing* example
 
 * changed rocks number
 * changed rocks size, planet size
 * changed rings thickness
+* TODO: enable gravitational interactions computed in real time, but it should still make rings
+* TODO: include some other models
+* TODO: change planet model + texture to some real planet
+* TODO: camera orbiting the planet on elliptical orbit? (like Juno)
+* TODO: rocks could cast shadow on the planet and other rocks (this could be very computationally expensive)
 
 # From Sascha Willems repository: 
 ## Vulkan C++ examples and demos
