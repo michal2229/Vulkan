@@ -18,6 +18,7 @@ Based on *instancing* example
 * TODO: change planet model + texture to some real planet
 * TODO: camera orbiting the planet on elliptical orbit? (like Juno)
 * TODO: rocks could cast shadow on the planet and other rocks (this could be very computationally expensive)
+* TODO: enable multisampling
 
 # From Sascha Willems repository: 
 ## Vulkan C++ examples and demos
