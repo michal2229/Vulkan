@@ -28,7 +28,7 @@
 #define VERTEX_BUFFER_BIND_ID 0
 #define INSTANCE_BUFFER_BIND_ID 1
 #define ENABLE_VALIDATION false
-#define INSTANCE_COUNT 2048
+#define INSTANCE_COUNT 4096
 
 class VulkanExample : public VulkanExampleBase
 {
@@ -66,11 +66,20 @@ public:
         VkDescriptorBufferInfo descriptor;
     } instanceBuffer;
 
+    // M V P
+    // M - MODEL MAT      - model space -> world space
+    // V - VIEW MAT       - world space -> camera space
+    // P - PROJECTION MAT - camera space -> square frustum space
+    // MVP = P * V * M
+    // gl_Position =  MVP * vec4(inPos, 1.0f);
+    // someVector  =  MVP * vec4(inVec, 0.0f);
     struct UBOVS {
-        glm::mat4 projection;
         glm::mat4 view;
-        glm::vec4 lightPos = glm::vec4(0.0f, -5.0f, 0.0f, 1.0f);
-        float locSpeed = 0.0f;
+        glm::mat4 projection;
+        glm::vec4 lightPos = glm::vec4(10.0f, 0.0f, 0.0f, 1.0f);
+        glm::vec3 camPos   = glm::vec3();
+        float lightInt  = 100.0f;
+        float locSpeed  = 0.0f;
         float globSpeed = 0.0f;
     } uboVS;
 
@@ -183,7 +192,7 @@ public:
 
     void loadAssets()
     {
-        models.rock.loadFromFile(getAssetPath() + "models/rock01.dae", vertexLayout, 0.025f, vulkanDevice, queue);
+        models.rock.loadFromFile(getAssetPath() + "models/rock01.dae", vertexLayout, 0.05f, vulkanDevice, queue);
 //        models.rock.loadFromFile(getAssetPath() + "models/4s.dae", vertexLayout, 0.025f, vulkanDevice, queue);
         models.planet.loadFromFile(getAssetPath() + "models/sphere.obj", vertexLayout, 0.1f, vulkanDevice, queue);
 
@@ -527,10 +536,16 @@ public:
         if (viewChanged)
         {
             uboVS.projection = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 256.0f);
-            uboVS.view = glm::translate(glm::mat4(), cameraPos + glm::vec3(0.0f, 0.0f, zoom));
-            uboVS.view = glm::rotate(uboVS.view, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-            uboVS.view = glm::rotate(uboVS.view, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-            uboVS.view = glm::rotate(uboVS.view, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            uboVS.view = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, zoom)) * glm::translate(glm::mat4(), cameraPos);
+            uboVS.view = glm::rotate(uboVS.view, glm::radians(rotation.x/16), glm::vec3(1.0f, 0.0f, 0.0f));
+            uboVS.view = glm::rotate(uboVS.view, glm::radians(rotation.y/16), glm::vec3(0.0f, 1.0f, 0.0f));
+            uboVS.view = glm::rotate(uboVS.view, glm::radians(rotation.z/16), glm::vec3(0.0f, 0.0f, 1.0f));
+
+            // Computing REAL camera coordinates, with rotation, zoom, etc... from MV matrix.
+            glm::mat3 rotMat(uboVS.view);
+            glm::vec3 d(uboVS.view[3]);
+            uboVS.camPos = -d * rotMat;
         }
 
         if (!paused)

@@ -31,4 +31,7 @@ vec3 starField(vec3 pos)
 void main() 
 {
 	outFragColor = vec4(starField(inUVW), 1.0);
+	
+	// TODO: delete this line:
+	outFragColor *= 0.0;
 }

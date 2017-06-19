@@ -27,9 +27,9 @@ void main()
 	outUV = inUV * vec2(10.0, 6.0);
 	gl_Position = ubo.projection * ubo.modelview * vec4(inPos.xyz, 1.0);
 	
-	vec4 pos = ubo.modelview * vec4(inPos, 1.0);
-	outNormal = mat3(ubo.modelview) * inNormal;
-	vec3 lPos = mat3(ubo.modelview) * ubo.lightPos.xyz;
+	vec4 pos = vec4(inPos, 1.0);
+	outNormal = inNormal;
+	vec3 lPos = ubo.lightPos.xyz;
 	outLightVec = lPos - pos.xyz;
 	outViewVec = -pos.xyz;		
 }
