@@ -33,52 +33,56 @@ layout (location = 3) out vec3 outViewVec;
 layout (location = 4) out vec3 outLightVec;
 layout (location = 5) out float outLightInt;
 
+
 void main() 
 {
 	outColor = inColor;
 	outUV = vec3(inUV, instanceTexIndex);
 
-	mat3 mx, my, mz;
+	mat4 mx, my, mz;
 	
 	// rotate around x
 	float s = sin(instanceRot.x + ubo.locSpeed);
 	float c = cos(instanceRot.x + ubo.locSpeed);
 
-	mx[0] = vec3( c,   s,  0.0);
-	mx[1] = vec3(-s,   c,  0.0);
-	mx[2] = vec3(0.0, 0.0, 1.0);
+	mx[0] = vec4( c,   s,  0.0, 0.0);
+	mx[1] = vec4(-s,   c,  0.0, 0.0);
+	mx[2] = vec4(0.0, 0.0, 1.0, 0.0);
+	mx[3] = vec4(0.0, 0.0, 0.0, 1.0);
 	
 	// rotate around y
 	s = sin(instanceRot.y + ubo.locSpeed);
 	c = cos(instanceRot.y + ubo.locSpeed);
 
-	my[0] = vec3( c,  0.0,  s);
-	my[1] = vec3(0.0, 1.0, 0.0);
-	my[2] = vec3(-s,  0.0,  c);
+	my[0] = vec4( c,  0.0,  s,  0.0);
+	my[1] = vec4(0.0, 1.0, 0.0, 0.0);
+	my[2] = vec4(-s,  0.0,  c,  0.0);
+	my[3] = vec4(0.0, 0.0, 0.0, 1.0);
 	
 	// rot around z
 	s = sin(instanceRot.z + ubo.locSpeed);
 	c = cos(instanceRot.z + ubo.locSpeed);	
 	
-	mz[0] = vec3(1.0, 0.0, 0.0);
-	mz[1] = vec3(0.0,  c,   s);
-	mz[2] = vec3(0.0, -s,   c);
+	mz[0] = vec4(1.0, 0.0, 0.0, 0.0);
+	mz[1] = vec4(0.0,  c,   s,  0.0);
+	mz[2] = vec4(0.0, -s,   c,  0.0);
+	mz[3] = vec4(0.0, 0.0, 0.0, 1.0);
 	
-	mat3 rotMat = mz * my * mx;
+	mat4 locRotMat = mz * my * mx;
 
-	mat4 gRotMat;
+	mat4 globRotMat;
 	s = sin(instanceRot.y + ubo.globSpeed);
 	c = cos(instanceRot.y + ubo.globSpeed);
-	gRotMat[0] = vec4( c,  0.0,  s,  0.0);
-	gRotMat[1] = vec4(0.0, 1.0, 0.0, 0.0);
-	gRotMat[2] = vec4(-s,  0.0,  c,  0.0);
-	gRotMat[3] = vec4(0.0, 0.0, 0.0, 1.0);	
+	globRotMat[0] = vec4( c,  0.0,  s,  0.0);
+	globRotMat[1] = vec4(0.0, 1.0, 0.0, 0.0);
+	globRotMat[2] = vec4(-s,  0.0,  c,  0.0);
+	globRotMat[3] = vec4(0.0, 0.0, 0.0, 1.0);
 	
-	vec4 locPos = vec4(rotMat * inPos.xyz, 1.0);
-	gl_Position = ubo.projection * ubo.view * gRotMat * vec4((locPos.xyz * instanceScale) + instancePos, 1.0);
-	outNormal = (gRotMat * vec4(rotMat * inNormal.xyz, 0.0)).xyz;
+	vec4 locPos = locRotMat * vec4(inPos.xyz, 1.0);
+	gl_Position = ubo.projection * ubo.view * globRotMat * vec4((locPos.xyz * instanceScale) + instancePos, 1.0);
+	outNormal = (globRotMat * locRotMat * vec4(inNormal.xyz, 0.0)).xyz;
 	
-	vec4 pos  = gRotMat * vec4((locPos.xyz * instanceScale) + instancePos, 1.0);
+	vec4 pos  = globRotMat * vec4((locPos.xyz * instanceScale) + instancePos, 1.0);
 	vec4 cPos = vec4(ubo.camPos, 1.0);
 	vec4 lPos = (ubo.lightPos);
 	
