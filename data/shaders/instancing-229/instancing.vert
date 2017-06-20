@@ -20,7 +20,7 @@ layout (binding = 0) uniform UBO
     mat4 view;
     mat4 projection;
     vec4 lightPos;
-    vec3 camPos;
+    vec4 camPos;
     float lightInt;
     float locSpeed;
     float globSpeed;
@@ -89,17 +89,19 @@ void main()
 	
 	mat4 locRotMat  = getLocalRotMat(ubo.locSpeed);
 	mat4 globRotMat = getGlobalRotMat(ubo.globSpeed);
+	mat4 allRotMat  = globRotMat * locRotMat;
 	
-	vec4 locPos = locRotMat * vec4(inPos.xyz, 1.0);
-	gl_Position = ubo.projection * ubo.view * globRotMat * vec4((locPos.xyz * instanceScale) + instancePos, 1.0);
+	vec4 posWorld = globRotMat * (locRotMat * vec4(inPos.xyz * instanceScale, 1.0) + vec4(instancePos, 0.0f));
 	
-	outNormal = (globRotMat * locRotMat * vec4(inNormal.xyz, 0.0)).xyz;
+	gl_Position = ubo.projection * ubo.view * posWorld;
 	
-	vec4 pos  = globRotMat * vec4((locPos.xyz * instanceScale) + instancePos, 1.0);
-	vec4 cPos = vec4(ubo.camPos, 1.0);
-	vec4 lPos = (ubo.lightPos);
+	outNormal = (allRotMat * vec4(inNormal.xyz, 0.0)).xyz;
 	
-	outLightVec = (lPos - pos).xyz;
-	outViewVec  = (cPos - pos).xyz;
+//	vec4 pos  = vec4((locPos.xyz), 1.0);
+	vec4 cPosWorld = (ubo.camPos);
+	vec4 lPosWorld = (ubo.lightPos);
+	
+	outLightVec = (lPosWorld - posWorld).xyz;
+	outViewVec  = (cPosWorld - posWorld).xyz;
 	outLightInt = ubo.lightInt;
 }

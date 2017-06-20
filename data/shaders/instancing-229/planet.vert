@@ -13,7 +13,7 @@ layout (binding = 0) uniform UBO
     mat4 view;
     mat4 projection;
     vec4 lightPos;
-    vec3 camPos;
+    vec4 camPos;
     float lightInt;
     float locSpeed;
     float globSpeed;
@@ -36,7 +36,7 @@ void main()
 	
 	vec4 pos  = (vec4(inPos, 1.0));
 	outNormal = (vec4(inNormal, 0.0)).xyz;
-	vec4 cPos = vec4(ubo.camPos, 1.0); 
+	vec4 cPos = (ubo.camPos); 
 	vec4 lPos = (ubo.lightPos);
 	outLightVec = (lPos - pos).xyz;
 	outViewVec = (cPos - pos).xyz;		

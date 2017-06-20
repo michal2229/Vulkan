@@ -77,7 +77,7 @@ public:
         glm::mat4 view;
         glm::mat4 projection;
         glm::vec4 lightPos = glm::vec4(10.0f, 0.0f, 0.0f, 1.0f);
-        glm::vec3 camPos   = glm::vec3();
+        glm::vec4 camPos   = glm::vec4();
         float lightInt  = 100.0f;
         float locSpeed  = 0.0f;
         float globSpeed = 0.0f;
@@ -545,12 +545,12 @@ public:
             // Computing REAL camera coordinates, with rotation, zoom, etc... from MV matrix.
             glm::mat3 rotMat(uboVS.view);
             glm::vec3 d(uboVS.view[3]);
-            uboVS.camPos = -d * rotMat;
+            uboVS.camPos = glm::vec4(-d * rotMat, 1.0f);
         }
 
         if (!paused)
         {
-            uboVS.locSpeed += frameTimer * 0.35f;
+            uboVS.locSpeed  += frameTimer * 0.35f;
             uboVS.globSpeed += frameTimer * 0.01f;
         }
 
