@@ -4,7 +4,7 @@
 #extension GL_ARB_shading_language_420pack : enable
 
 #define SOFTEN_AO     25.0f
-#define AMBIENT_COEFF  0.0025f
+#define AMBIENT_COEFF 0.01f
 
 layout (binding = 1) uniform sampler2D samplerColorMap;
 

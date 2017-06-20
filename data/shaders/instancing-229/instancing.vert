@@ -32,6 +32,7 @@ layout (location = 2) out vec3 outUV;
 layout (location = 3) out vec3 outViewVec;
 layout (location = 4) out vec3 outLightVec;
 layout (location = 5) out float outLightInt;
+layout (location = 6) out vec3 outWorldPos;
 
 mat4 getLocalRotMat(float loc_speed) 
 {
@@ -93,15 +94,14 @@ void main()
 	
 	vec4 posWorld = globRotMat * (locRotMat * vec4(inPos.xyz * instanceScale, 1.0) + vec4(instancePos, 0.0f));
 	
-	gl_Position = ubo.projection * ubo.view * posWorld;
+	vec4 cameraPosWorld = (ubo.camPos);
+	vec4 lightPosWorld = (ubo.lightPos);
+
+	outLightVec = (lightPosWorld - posWorld).xyz;
+	outViewVec  = (cameraPosWorld - posWorld).xyz;
+	outLightInt = ubo.lightInt;
+	outWorldPos = posWorld.xyz;
 	
 	outNormal = (allRotMat * vec4(inNormal.xyz, 0.0)).xyz;
-	
-//	vec4 pos  = vec4((locPos.xyz), 1.0);
-	vec4 cPosWorld = (ubo.camPos);
-	vec4 lPosWorld = (ubo.lightPos);
-	
-	outLightVec = (lPosWorld - posWorld).xyz;
-	outViewVec  = (cPosWorld - posWorld).xyz;
-	outLightInt = ubo.lightInt;
+	gl_Position = ubo.projection * ubo.view * posWorld;
 }
