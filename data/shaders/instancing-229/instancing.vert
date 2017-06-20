@@ -38,8 +38,8 @@ mat4 getLocalRotMat(float loc_speed)
     mat4 mx, my, mz;
 	
 	// rotate around x
-	float s = sin(instanceRot.x + ubo.locSpeed);
-	float c = cos(instanceRot.x + ubo.locSpeed);
+	float s = sin(instanceRot.x + loc_speed);
+	float c = cos(instanceRot.x + loc_speed);
 
 	mx[0] = vec4( c,   s,  0.0, 0.0);
 	mx[1] = vec4(-s,   c,  0.0, 0.0);
@@ -47,8 +47,8 @@ mat4 getLocalRotMat(float loc_speed)
 	mx[3] = vec4(0.0, 0.0, 0.0, 1.0);
 	
 	// rotate around y
-	s = sin(instanceRot.y + ubo.locSpeed);
-	c = cos(instanceRot.y + ubo.locSpeed);
+	s = sin(instanceRot.y + loc_speed);
+	c = cos(instanceRot.y + loc_speed);
 
 	my[0] = vec4( c,  0.0,  s,  0.0);
 	my[1] = vec4(0.0, 1.0, 0.0, 0.0);
@@ -56,8 +56,8 @@ mat4 getLocalRotMat(float loc_speed)
 	my[3] = vec4(0.0, 0.0, 0.0, 1.0);
 	
 	// rot around z
-	s = sin(instanceRot.z + ubo.locSpeed);
-	c = cos(instanceRot.z + ubo.locSpeed);	
+	s = sin(instanceRot.z + loc_speed);
+	c = cos(instanceRot.z + loc_speed);	
 	
 	mz[0] = vec4(1.0, 0.0, 0.0, 0.0);
 	mz[1] = vec4(0.0,  c,   s,  0.0);
@@ -67,52 +67,32 @@ mat4 getLocalRotMat(float loc_speed)
 	return mz * my * mx;
 }
 
-void main() 
+mat4 getGlobalRotMat(float glob_speed) 
 {
-	outColor = inColor;
-	outUV = vec3(inUV, instanceTexIndex);
-
-	mat4 mx, my, mz;
+    mat4 globRotMat;
+    
+	float s = sin(instanceRot.y + glob_speed);
+	float c = cos(instanceRot.y + glob_speed);
 	
-	// rotate around x
-	float s = sin(instanceRot.x + ubo.locSpeed);
-	float c = cos(instanceRot.x + ubo.locSpeed);
-
-	mx[0] = vec4( c,   s,  0.0, 0.0);
-	mx[1] = vec4(-s,   c,  0.0, 0.0);
-	mx[2] = vec4(0.0, 0.0, 1.0, 0.0);
-	mx[3] = vec4(0.0, 0.0, 0.0, 1.0);
-	
-	// rotate around y
-	s = sin(instanceRot.y + ubo.locSpeed);
-	c = cos(instanceRot.y + ubo.locSpeed);
-
-	my[0] = vec4( c,  0.0,  s,  0.0);
-	my[1] = vec4(0.0, 1.0, 0.0, 0.0);
-	my[2] = vec4(-s,  0.0,  c,  0.0);
-	my[3] = vec4(0.0, 0.0, 0.0, 1.0);
-	
-	// rot around z
-	s = sin(instanceRot.z + ubo.locSpeed);
-	c = cos(instanceRot.z + ubo.locSpeed);	
-	
-	mz[0] = vec4(1.0, 0.0, 0.0, 0.0);
-	mz[1] = vec4(0.0,  c,   s,  0.0);
-	mz[2] = vec4(0.0, -s,   c,  0.0);
-	mz[3] = vec4(0.0, 0.0, 0.0, 1.0);
-	
-	mat4 locRotMat = getLocalRotMat(ubo.locSpeed);
-
-	mat4 globRotMat;
-	s = sin(instanceRot.y + ubo.globSpeed);
-	c = cos(instanceRot.y + ubo.globSpeed);
 	globRotMat[0] = vec4( c,  0.0,  s,  0.0);
 	globRotMat[1] = vec4(0.0, 1.0, 0.0, 0.0);
 	globRotMat[2] = vec4(-s,  0.0,  c,  0.0);
 	globRotMat[3] = vec4(0.0, 0.0, 0.0, 1.0);
 	
+	return globRotMat;
+}
+
+void main() 
+{
+	outColor = inColor;
+	outUV = vec3(inUV, instanceTexIndex);
+	
+	mat4 locRotMat  = getLocalRotMat(ubo.locSpeed);
+	mat4 globRotMat = getGlobalRotMat(ubo.globSpeed);
+	
 	vec4 locPos = locRotMat * vec4(inPos.xyz, 1.0);
 	gl_Position = ubo.projection * ubo.view * globRotMat * vec4((locPos.xyz * instanceScale) + instancePos, 1.0);
+	
 	outNormal = (globRotMat * locRotMat * vec4(inNormal.xyz, 0.0)).xyz;
 	
 	vec4 pos  = globRotMat * vec4((locPos.xyz * instanceScale) + instancePos, 1.0);
