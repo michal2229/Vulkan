@@ -10,6 +10,8 @@ This is my Vulkan playground repository, it is based on *Vulkan C++ examples and
 
 <img src="./instancing-229/results/Zrzut ekranu z 2017-06-19 22-11-05 - made point light instead of light from camera, some fake AO, matricies behave differently.png" height="240px" align="right">
 
+<img src="./instancing-229/results/Zrzut ekranu z 2017-06-20 23-14-34 - added planet shadow.png" height="240px" align="right">
+
 Based on *instancing* example
 
 * changed rocks number
@@ -23,7 +25,7 @@ Based on *instancing* example
 * TODO: include some other models
 * TODO: change planet model + texture to some real planet
 * TODO: camera orbiting the planet on elliptical orbit? (like Juno)
-* TODO: rocks could cast shadow on the planet and other rocks (this could be very computationally expensive)
+* IN PROGRESS: rocks could cast shadow on the planet and other rocks (this could be very computationally expensive)
 * TODO: enable multisampling
 
 # From Sascha Willems repository: 
